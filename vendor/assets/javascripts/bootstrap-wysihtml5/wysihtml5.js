@@ -8305,8 +8305,8 @@ wysihtml5.views.View = Base.extend(
       try { element.setActive(); } catch(e) {}
     } else {
       var elementStyle = element.style,
-          originalScrollTop = doc.documentElement.scrollTop || doc.body.scrollTop,
-          originalScrollLeft = doc.documentElement.scrollLeft || doc.body.scrollLeft,
+          originalScrollTop = doc.documentElement.scrollTop,
+          originalScrollLeft = doc.documentElement.scrollLeft,
           originalStyles = {
             position:         elementStyle.position,
             top:              elementStyle.top,
@@ -9434,10 +9434,6 @@ wysihtml5.views.Textarea = wysihtml5.views.View.extend(
           this.toolbar = new wysihtml5.toolbar.Toolbar(this, this.config.toolbar);
         }
       });
-      
-      try {
-        console.log("Heya! This page is using wysihtml5 for rich text editing. Check out https://github.com/xing/wysihtml5");
-      } catch(e) {}
     },
     
     isCompatible: function() {
