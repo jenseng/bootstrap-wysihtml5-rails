@@ -4895,6 +4895,32 @@ wysihtml5.dom.parse = (function() {
     return newNode;
   }
   
+  function _updateMatchingAttributes(oldNode, attributes, attributeName, method) {
+    var oldAttributes = oldNode.attributes,
+        pattern,
+        i,
+        l,
+        key;
+    if (attributeName.match(/\*/)) {
+      pattern = new RegExp("^" + attributeName.replace(/([\/\.\*\+\?\|\(\)\[\]\{\}])/, '\\$1').replace('\\*', '.*') + "$");
+      for (i = 0, l = oldAttributes.length; i < l; i++) {
+        key = oldAttributes[i].nodeName.toLowerCase();
+        if (key.match(pattern)) {
+          _updateAttribute(oldNode, attributes, key, method);
+        }
+      }
+    } else {
+      _updateAttribute(oldNode, attributes, attributeName, method);
+    }
+  }
+
+  function _updateAttribute(oldNode, attributes, attributeName, method) {
+    var newAttributeValue = method(_getAttribute(oldNode, attributeName));
+    if (typeof(newAttributeValue) === "string") {
+      attributes[attributeName] = newAttributeValue;
+    }
+  }
+
   function _handleAttributes(oldNode, newNode, rule) {
     var attributes          = {},                         // fresh new set of attributes to set on newNode
         setClass            = rule.set_class,             // classes to set
@@ -4912,7 +4938,6 @@ wysihtml5.dom.parse = (function() {
         currentClass,
         newClass,
         attributeName,
-        newAttributeValue,
         method;
     
     if (setAttributes) {
@@ -4926,10 +4951,7 @@ wysihtml5.dom.parse = (function() {
         if (!method) {
           continue;
         }
-        newAttributeValue = method(_getAttribute(oldNode, attributeName));
-        if (typeof(newAttributeValue) === "string") {
-          attributes[attributeName] = newAttributeValue;
-        }
+        _updateMatchingAttributes(oldNode, attributes, attributeName, method);
       }
     }
     
